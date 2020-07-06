@@ -32,6 +32,8 @@ const index = require('./routes/index');
 const registerUsersRouter = require("./routes/users");
 const loginRouter = require("./routes/login");
 const clientRouter = require("./routes/clients");
+const itemsRouter = require("./routes/items");
+const ordersRouter = require("./routes/orders");
 const db = require("./models/index");
 
 
@@ -40,6 +42,8 @@ const db = require("./models/index");
 app.use('/api/users', registerUsersRouter);
 app.use('/api/login', loginRouter);
 app.use('/api/clients', clientRouter);
+app.use('/api/items', itemsRouter);
+app.use('/api/orders', ordersRouter);
 
 // //db.sequelize.sync();
 

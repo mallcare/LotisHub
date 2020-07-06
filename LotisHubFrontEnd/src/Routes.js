@@ -18,6 +18,7 @@ import {
   PasswordResetReceive as PasswordResetReceiveView,
   NotFound as NotFoundView,
   ClientList as ClientListView,
+  Products as ProductsView,
 } from './views';
 
 const Routes = () => {
@@ -41,7 +42,7 @@ const Routes = () => {
         path="/users"
       />
       <RouteWithLayout
-        component={ProductListView}
+        component={ProductsView}
         exact
         layout={MainLayout}
         path="/products"

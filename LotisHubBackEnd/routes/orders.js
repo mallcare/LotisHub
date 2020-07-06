@@ -9,7 +9,7 @@ const router = express.Router();
 //router.use('/auth', auth);
 //router.use('/', authMiddleware);
 
-// function validateClient(client) {
+// function validateOrder(order) {
 //     const schema = {
 //       client_code: Joi.string().min(2).max(50).required(),
 //       client_name: Joi.string().min(2).max(50).required(),
@@ -37,11 +37,11 @@ const router = express.Router();
 //       description: Joi.string().min(2).max(50).required()
 
 //     };
-//     return Joi.validate(client, schema);
+//     return Joi.validate(order, schema);
 // }
 
 
-// Client Selection
+// Orders Selection
 router.get('/', async function (req, res) {
     // try {
     //   await validateClient(req.body);
@@ -59,8 +59,8 @@ router.get('/', async function (req, res) {
     // }
 
   
-    //등록된 고객사 조회
-    const clientFound = await db.clients.findAll()
+    //등록된 물품 조회
+    const orderFound = await db.orders.findAll()
         .then( result => {
             res.json(result);
             //res.json(JSON.stringify(result));
@@ -74,7 +74,7 @@ router.get('/', async function (req, res) {
 
 
 
-// Client Registration
+// Orders Registration
 router.post('/register', async function (req, res) {
     // 토큰확인
     // if(!req.decoded.admin) {
@@ -93,46 +93,37 @@ router.post('/register', async function (req, res) {
       //return res.status(400).send(err.details[0].message);
     } 
   
-    //등록된 고객사 확인
-    const clientFound = await db.clients.findOne({
+    //등록된 물품 확인
+    const orderFound = await db.orders.findOne({
       where: {
-        client_id: req.body.client_id
+        order_number: req.body.order_number
       }
     });
-    if (clientFound){
-        return res.status(400).send(JSON.stringify({message: '이미 등록된 고객사 입니다!!'}));
+    if (orderFound){
+        return res.status(400).send(JSON.stringify({message: '이미 등록된 아이템 입니다!!'}));
         //return res.status(400).send('이미 등록된 사용자 입니다!!');
     }
   
-    // Create new client
-    var client = await db.clients.build({
-        client_code:"",
-        client_name:"",
-        office_address:"",
-        office_zipcode:"",
-        onwer_name:"",
-        representative_name:"",
-        office_phonenumber:"",
-        base_unit_cost:0,
-        packing_unit_cost:0,
-        return_shipping_cost:0,
-        cj_contract_unit_cost:0,
-        on_delivery_cost:0,
-        picking:0,
-        hanjin_boxtype:0,
-        cj_boxtype:0,
-        input_cost:0,
-        output_cost:0,
-        airfare:0,
-        courier_contract_code:1,
-        superviser_code:1,
-        tax_invoice_date:"",
-        service_start_date:"",
-        service_end_date:"",
-        description:""
+    // Create new order
+    var order = await db.orders.build({
+      customers_id: "",
+      order_number: "",
+      tracking_number: "",
+      customer_name: "",
+      customer_address: "",
+      customer_zipcode: "",
+      customer_contact_number: "",
+      customer_phone_number: "",
+      order_date: "",
+      estimated_delivery_date: "",
+      delivery_status: "",
+      delivery_firm: "",
+      isVisible: ""
     });
 
-    client = await client.save();
+    order = await order.save();
+
+
 
 });
 

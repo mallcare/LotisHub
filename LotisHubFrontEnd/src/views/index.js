@@ -11,3 +11,5 @@ export { default as PasswordResetReceive } from './PasswordResetReceive';
 export { default as Typography } from './Typography';
 export { default as UserList } from './UserList';
 export { default as ClientList } from './Client';
+export { default as Products } from './Products';
+export { default as Orders } from './Orders';
