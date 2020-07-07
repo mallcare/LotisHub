@@ -63,12 +63,10 @@ const ClientList = props => {
     const classes = useStyles();
 
 
-    const clients = useSelector(state => state.clients);
+    const clients = useSelector(state => state.clients.clients);
 
     const dispatch = useDispatch();
-
     const [data, setClientsData] = useState([]);
-       
     const [isError, setIsError] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -76,7 +74,7 @@ const ClientList = props => {
       { field: 'client_id', title: '번호', width: 100 },
       { field: 'client_code', title: '거래처코드', initialEditValue: 'initial edit value', width: 100 },
       { field: 'client_name', title: '거래처명', width: 100 },
-      { field: 'onwer_name', title: '대표자성명', width: 100 },
+      { field: 'owner_name', title: '대표자성명', width: 100 },
       { field: 'superviser_code', title: '주관사코드', width: 100 },
       { field: 'courier_contract_code', title: '택배계약코드', width: 100 },
     ]);
@@ -84,8 +82,8 @@ const ClientList = props => {
  
     useEffect(() => {
       dispatch(clientActions.getAll());
+      //setClientsData(clients.clients);
 
-      setClientsData(clients.clients);
       
     }, []);
 
@@ -110,21 +108,21 @@ const ClientList = props => {
 
     const localization = [
         {
-            pagination: {
-                labelDisplayedRows: '{from}-{to} of {count}'
-            },
-            toolbar: {
-                nRowsSelected: '{0} row(s) selected'
-            },
-            header: {
-                actions: '편집'
-            },
-            body: {
-                emptyDataSourceMessage: 'No records to display',
-                filterRow: {
-                    filterTooltip: 'Filter'
+          pagination: {
+              labelDisplayedRows: '{from}-{to} of {count}'
+          },
+          toolbar: {
+              nRowsSelected: '{0} row(s) selected'
+          },
+          header: {
+              actions: '편집'
+          },
+          body: {
+              emptyDataSourceMessage: 'No records to display',
+              filterRow: {
+                  filterTooltip: 'Filter'
             }
-         }
+          }
         }
     ];
 
@@ -171,13 +169,13 @@ const ClientList = props => {
       title="거래처 조회"
       icons={tableIcons}
       columns={columns}
-      data={data}
+      data={clients}
       editable={{
         onRowAdd: newData =>
           new Promise((resolve, reject) => {
             setTimeout(() => {
               //userActions.
-              
+              dispatch(clientActions.register(newData));
               //setData([...data, newData]);
               
               resolve();
@@ -202,7 +200,7 @@ const ClientList = props => {
         onRowDelete: oldData =>
           new Promise((resolve, reject) => {
             setTimeout(() => {
-              const dataDelete = [...data];
+              const dataDelete = [...clients];
               const index = oldData.tableData.id;
               dataDelete.splice(index, 1);
               //setData([...dataDelete]);

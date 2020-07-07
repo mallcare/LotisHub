@@ -26,7 +26,7 @@ module.exports = function(sequelize, DataTypes) {
         allowNull: true,
         defaultValue: ''
       },
-      onwer_name: {
+      owner_name: {
         type: DataTypes.STRING(50),
         allowNull: true,
         defaultValue: ''
@@ -62,7 +62,7 @@ module.exports = function(sequelize, DataTypes) {
         allowNull: true
       },
       picking: {
-        type: DataTypes.INTEGER(11),
+        type: DataTypes.TINYINT(4),
         allowNull: true
       },
       hanjin_boxtype: {

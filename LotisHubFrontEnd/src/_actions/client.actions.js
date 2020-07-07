@@ -2,16 +2,14 @@ import { clientConstants } from '../_constants';
 import { clientService } from '../_services';
 import { alertActions } from '.';
 
-export const clientActions = {
-    register,
-    getAll,
-    getById,
-    update,
-    delete: _delete
-};
 
 /************************************Client API********************************************/
-function register(client) {
+const register = (client) => {
+    const request = (client) => { return { type: clientConstants.REGISTER_REQUEST, client } }
+    const success = (client) => { return { type: clientConstants.REGISTER_SUCCESS, client } }
+    const failure = (error) => { return { type: clientConstants.REGISTER_FAILURE, error } }
+    const refresh = (clients) => { return { type: clientConstants.GETALL_SUCCESS, clients } }
+
     return dispatch => {
         dispatch(request(client));
 
@@ -20,10 +18,19 @@ function register(client) {
                 client => { 
                     dispatch(success(client));
                     //history.push('/login');
-                    //alert('고객사 등록이 정상적으로 처리되었습니다');
-                    alert(client);
+                    alert('고객사 등록이 정상적으로 처리되었습니다');
                     dispatch(alertActions.success('Registration successful'));
                     //window.location.replace("/");
+                    clientService.getAll().then(
+                        clients => {
+                            dispatch(refresh(clients));
+                        },
+                        error => {
+                            alert(error);
+                            dispatch(failure(error.toString()));
+                            //window.location.replace("/sign-in");
+                        } 
+                    );
                 },
                 error => {
                     alert(error.toString());
@@ -32,14 +39,14 @@ function register(client) {
                 }
             );
     };
-
-    function request(client) { return { type: clientConstants.REGISTER_REQUEST, client } }
-    function success(client) { return { type: clientConstants.REGISTER_SUCCESS, client } }
-    function failure(error) { return { type: clientConstants.REGISTER_FAILURE, error } }
 }
 
 
-function getAll() {
+const getAll = () => {
+    const request = () => { return { type: clientConstants.GETALL_REQUEST } }
+    const success = (clients) => { return { type: clientConstants.GETALL_SUCCESS, clients } }
+    const failure = (error) => { return { type: clientConstants.GETALL_FAILURE, error } }
+
     return dispatch => {
         dispatch(request());
 
@@ -55,33 +62,32 @@ function getAll() {
                 } 
             );
     };
-
-    function request() { return { type: clientConstants.GETALL_REQUEST } }
-    function success(clients) { return { type: clientConstants.GETALL_SUCCESS, clients } }
-    function failure(error) { return { type: clientConstants.GETALL_FAILURE, error } }
 }
 
 
-function getById(id) {
+const getById = (id) => {
+    const request = () => { return { type: clientConstants.GETALL_REQUEST } }
+    const success = (client) => { return { type: clientConstants.GETALL_SUCCESS, client } }
+    const failure = (error) => { return { type: clientConstants.GETALL_FAILURE, error } }
+
     return dispatch => {
         dispatch(request(id));
-
         clientService.getClientbyId(id)
             .then(
                 client => dispatch(success(client)),
                 error => dispatch(failure(error.toString()))
             );
     };
-
-    function request() { return { type: clientConstants.GETALL_REQUEST } }
-    function success(client) { return { type: clientConstants.GETALL_SUCCESS, client } }
-    function failure(error) { return { type: clientConstants.GETALL_FAILURE, error } }
 }
 
+
 function update(client) {
+    const request = (client) => { return { type: clientConstants.REGISTER_REQUEST, client } }
+    const success = (client) => { return { type: clientConstants.REGISTER_SUCCESS, client } }
+    const failure = (error) => { return { type: clientConstants.REGISTER_FAILURE, error } }
+
     return dispatch => {
         dispatch(request(client));
-
         clientService.register(client)
             .then(
                 client => { 
@@ -99,14 +105,14 @@ function update(client) {
                 }
             );
     };
-
-    function request(client) { return { type: clientConstants.REGISTER_REQUEST, client } }
-    function success(client) { return { type: clientConstants.REGISTER_SUCCESS, client } }
-    function failure(error) { return { type: clientConstants.REGISTER_FAILURE, error } }
 }
 
 
-function _delete(clientid) {
+const _delete = (clientid) => {
+    const request = (clientid) => { return { type: clientConstants.REGISTER_REQUEST, clientid } }
+    const success = (client) => { return { type: clientConstants.REGISTER_SUCCESS, client } }
+    const failure = (error) => { return { type: clientConstants.REGISTER_FAILURE, error } }
+
     return dispatch => {
         dispatch(request(clientid));
 
@@ -122,9 +128,13 @@ function _delete(clientid) {
                 }
             );
     };
-
-    function request(clientid) { return { type: clientConstants.REGISTER_REQUEST, clientid } }
-    function success(client) { return { type: clientConstants.REGISTER_SUCCESS, client } }
-    function failure(error) { return { type: clientConstants.REGISTER_FAILURE, error } }
 }
 
+
+export const clientActions = {
+    register,
+    getAll,
+    getById,
+    update,
+    delete: _delete
+};
