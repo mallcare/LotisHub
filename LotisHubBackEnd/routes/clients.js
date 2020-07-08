@@ -139,8 +139,15 @@ router.put('/:id', async (req, res) => {
 });
 
 
-router.delete('/:id', async (req, res) => {
-
+router.delete('/:client_id', async (req, res) => {
+  const { client_id } = req.params
+  db.clients.destroy({where: {client_id: client_id}})
+  .then(result => {
+      return res.status(200).json(result);
+  })
+  .catch(err => {
+      console.error(err);
+  });
 });
 
 module.exports = router;

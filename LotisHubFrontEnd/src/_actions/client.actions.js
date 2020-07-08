@@ -81,7 +81,7 @@ const getById = (id) => {
 }
 
 
-function update(client) {
+const update = (client) => {
     const request = (client) => { return { type: clientConstants.REGISTER_REQUEST, client } }
     const success = (client) => { return { type: clientConstants.REGISTER_SUCCESS, client } }
     const failure = (error) => { return { type: clientConstants.REGISTER_FAILURE, error } }
@@ -112,15 +112,26 @@ const _delete = (clientid) => {
     const request = (clientid) => { return { type: clientConstants.REGISTER_REQUEST, clientid } }
     const success = (client) => { return { type: clientConstants.REGISTER_SUCCESS, client } }
     const failure = (error) => { return { type: clientConstants.REGISTER_FAILURE, error } }
+    const refresh = (clients) => { return { type: clientConstants.GETALL_SUCCESS, clients } }
 
     return dispatch => {
         dispatch(request(clientid));
 
-        clientService.deleteClient(clientid)
+        clientService.delete(clientid)
             .then(
                 client => { 
                     dispatch(success());
                     dispatch(alertActions.success(client));
+
+                    clientService.getAll().then(
+                        clients => {
+                            dispatch(refresh(clients));
+                        },
+                        error => {
+                            alert(error);
+                            dispatch(failure(error.toString()));
+                        } 
+                    );
                 },
                 error => {
                     dispatch(failure(error.toString()));
