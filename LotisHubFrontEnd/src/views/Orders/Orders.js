@@ -1,11 +1,7 @@
 import React, { useEffect, useState, forwardRef } from 'react';
-import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 import MaterialTable from 'material-table'
-
-//import AlertDialog from '../../components/AlertDialog'
-
 import { orderActions } from '../../_actions';
 
 import AddBox from '@material-ui/icons/AddBox';
@@ -24,6 +20,9 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
+
+import UpdateOrderDialog from './updateDialog';
+
 
 const tableIcons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -59,16 +58,9 @@ const useStyles = makeStyles(theme => ({
 
 const OrdersList = props => {
     const classes = useStyles();
-
-
-    const orders = useSelector(state => state.orders);
-
+    const orders   = useSelector(state => state.orders.orders);
+    const isLoading = useSelector(state => state.orders.loading);
     const dispatch = useDispatch();
-
-    const [data, setOrdersData] = useState([]);
-       
-    const [isError, setIsError] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
 
     const [columns, setColumns] = useState([
       { field: 'order_number', title: '주문번호', width: 100 },
@@ -83,70 +75,46 @@ const OrdersList = props => {
       { field: 'delivery_firm', title: '배송회사', width: 100 },
     ]);
 
- 
+    const [orderInfo, setOrderInfo] = useState({})
+    const [editorOpen, setEditorOpen] = useState(false)
+
     useEffect(() => {
       dispatch(orderActions.getAll());
 
-      setOrdersData(orders.orders);
-      
-    }, []);
+    }, [dispatch]);
 
 
-    const localization = [
-        {
-            pagination: {
-                labelDisplayedRows: '{from}-{to} of {count}'
-            },
-            toolbar: {
-                nRowsSelected: '{0} row(s) selected'
-            },
-            header: {
-                actions: '편집'
-            },
-            body: {
-                emptyDataSourceMessage: 'No records to display',
-                filterRow: {
-                    filterTooltip: 'Filter'
-            }
-         }
+    const actions = [
+      {
+        icon: Edit,
+        tooltip: '주문 정보 수정',
+        onClick: (event, rowData) => {
+          setEditorOpen(true)
+          setOrderInfo(rowData)
         }
+      },
     ];
 
-
-
-    function AddRow(data, oldData, newData) {
-        console.log("add");
-        //setDialogOpen(false);
-        // 수정 Api 호출 후 결과에 따라 
-        //const {data, oldData, newData } = props;
-
-        // dispatch(userActions.resetPassword( formState.values.email ));
+    const RegistOrder = newOrder => new Promise((resolve, reject) => {
+      setTimeout(() => {
         
-        //setData([...dataUpdate]);
-    };
-
-    function UpdateRow(data, oldData, newData) {
-        console.log("Update");
-        //setDialogOpen(false);
-        // 수정 Api 호출 후 결과에 따라 
-        // dispatch(userActions.resetPassword( formState.values.email ));
+        dispatch(orderActions.register(newOrder));
         
-        //setData([...dataUpdate]);
-    };
+        resolve();
+      }, 100)
+    });
 
-    function DeleteRow(){
-        
-        // axios.delete(`http://localhost:3000/api/v1/product?id=${props}`)
-        //     .then(
-        //         res => {
-        //              console.log('Deleted Successfully.');
-        //          },
-        //         error => {
-        //         }    
-    //       //dispatch(userActions.DeleteProduct( id, token ));
-    //    // setDialogOpen(false);
+    const UnregistOrder = order => new Promise((resolve, reject) => {
+      setTimeout(() => {
+  
+        dispatch(orderActions.delete(order.order_number));
+  
+        resolve()
+      }, 100)
+    })
 
-            // );
+    const CloseEditor = () => {
+      setEditorOpen(false)
     }
 
   return (
@@ -155,47 +123,14 @@ const OrdersList = props => {
       title="주문 조회"
       icons={tableIcons}
       columns={columns}
-      data={data}
+      data={orders}
+      isLoading={isLoading}
       editable={{
-        onRowAdd: newData =>
-          new Promise((resolve, reject) => {
-            setTimeout(() => {
-              //userActions.
-              
-              //setData([...data, newData]);
-              
-              resolve();
-            }, 1000)
-          }),
-        onRowUpdate: (newData, oldData) =>
-          new Promise((resolve, reject) => {
-            setTimeout(() => {
-                if( window.confirm("주문 정보를 수정 하시겠습니까? " + newData.name) ){
-                    console.log(newData);
-                    //deleteHandler( event, rowData );
-                }
-                //userActions.
-            //   const dataUpdate = [...data];
-            //   const index = oldData.tableData.id;
-            //   dataUpdate[index] = newData;
-            //   setData([...dataUpdate]);
-
-              resolve();
-            }, 1000)
-          }),
-        onRowDelete: oldData =>
-          new Promise((resolve, reject) => {
-            setTimeout(() => {
-              const dataDelete = [...data];
-              const index = oldData.tableData.id;
-              dataDelete.splice(index, 1);
-              //setData([...dataDelete]);
-              
-              resolve()
-            }, 1000)
-          }),
+        onRowAdd: RegistOrder,
+        onRowDelete: UnregistOrder,
       }}
-      options={{
+      actions={actions}
+        options={{
         actionsColumnIndex: -1,
         exportButton: true
       }}
@@ -231,11 +166,9 @@ const OrdersList = props => {
         deleteTooltip: "삭제",
         editTooltip: "수정"
      }
-
     }}
-
     />
-
+    <UpdateOrderDialog open={editorOpen} order={orderInfo} close={CloseEditor} />
     </div>
   );
 
@@ -243,11 +176,5 @@ const OrdersList = props => {
 
 };
 
-OrdersList.propTypes = {
-  //loginUser: PropTypes.func.isRequired,
-  orders: PropTypes.object.isRequired,
-  history: PropTypes.object,
-  errors: PropTypes.string.isRequired
-};
 
 export default OrdersList;

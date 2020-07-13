@@ -6,6 +6,7 @@ import { users } from './users.reducer';
 import { clients } from './clients.reducer';
 import { alert } from './alert.reducer';
 import { products } from './products.reducer';
+import { orders } from './orders.reducer';
 
 export default combineReducers({
   authentication,
@@ -13,6 +14,7 @@ export default combineReducers({
   users,
   clients,
   products,
+  orders,
   alert
 });
 

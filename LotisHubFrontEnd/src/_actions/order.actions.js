@@ -2,16 +2,15 @@ import { orderConstants } from '../_constants';
 import { orderService } from '../_services';
 import { alertActions } from '.';
 
-export const orderActions = {
-    register,
-    getAll,
-    getById,
-    update,
-    delete: _delete
-};
 
-/************************************order API********************************************/
-function register(order) {
+
+/************************************Order API********************************************/
+const register = (order) => {
+    const request = (order) => { return { type: orderConstants.REGISTER_REQUEST, order } }
+    const success = (order) => { return { type: orderConstants.REGISTER_SUCCESS, order } }
+    const failure = (error) => { return { type: orderConstants.REGISTER_FAILURE, error } }
+    const refresh = (orders) => { return { type: orderConstants.GETALL_SUCCESS, orders } }
+
     return dispatch => {
         dispatch(request(order));
 
@@ -20,10 +19,19 @@ function register(order) {
                 order => { 
                     dispatch(success(order));
                     //history.push('/login');
-                    //alert('고객사 등록이 정상적으로 처리되었습니다');
-                    alert(order);
+                    alert('주문 등록이 정상적으로 처리되었습니다');
                     dispatch(alertActions.success('Registration successful'));
                     //window.location.replace("/");
+                    orderService.getAll().then(
+                        orders => {
+                            dispatch(refresh(orders));
+                        },
+                        error => {
+                            alert(error);
+                            dispatch(failure(error.toString()));
+                            //window.location.replace("/sign-in");
+                        } 
+                    );
                 },
                 error => {
                     alert(error.toString());
@@ -32,21 +40,21 @@ function register(order) {
                 }
             );
     };
-
-    function request(order) { return { type: orderConstants.REGISTER_REQUEST, order } }
-    function success(order) { return { type: orderConstants.REGISTER_SUCCESS, order } }
-    function failure(error) { return { type: orderConstants.REGISTER_FAILURE, error } }
 }
 
 
-function getAll() {
+const getAll = () => {
+    const request = () => { return { type: orderConstants.GETALL_REQUEST } }
+    const success = (orders) => { return { type: orderConstants.GETALL_SUCCESS, orders } }
+    const failure = (error) => { return { type: orderConstants.GETALL_FAILURE, error } }
+
     return dispatch => {
         dispatch(request());
 
         orderService.getAll()
             .then(
-                order => {
-                    dispatch(success(order));
+                orders => {
+                    dispatch(success(orders));
                 },
                 error => {
                     alert(error);
@@ -55,33 +63,31 @@ function getAll() {
                 } 
             );
     };
-
-    function request() { return { type: orderConstants.GETALL_REQUEST } }
-    function success(orders) { return { type: orderConstants.GETALL_SUCCESS, orders } }
-    function failure(error) { return { type: orderConstants.GETALL_FAILURE, error } }
 }
 
 
-function getById(id) {
+const getById = (id) => {
+    const request = () => { return { type: orderConstants.GETALL_REQUEST } }
+    const success = (order) => { return { type: orderConstants.GETALL_SUCCESS, order } }
+    const failure = (error) => { return { type: orderConstants.GETALL_FAILURE, error } }
+
     return dispatch => {
         dispatch(request(id));
-
         orderService.getOrderbyId(id)
             .then(
                 order => dispatch(success(order)),
                 error => dispatch(failure(error.toString()))
             );
     };
-
-    function request() { return { type: orderConstants.GETALL_REQUEST } }
-    function success(order) { return { type: orderConstants.GETALL_SUCCESS, order } }
-    function failure(error) { return { type: orderConstants.GETALL_FAILURE, error } }
 }
 
-function update(order) {
+const update = (order) => {
+    const request = (order) => { return { type: orderConstants.REGISTER_REQUEST, order } }
+    const success = (order) => { return { type: orderConstants.REGISTER_SUCCESS, order } }
+    const failure = (error) => { return { type: orderConstants.REGISTER_FAILURE, error } }
+
     return dispatch => {
         dispatch(request(order));
-
         orderService.register(order)
             .then(
                 order => { 
@@ -89,7 +95,7 @@ function update(order) {
                     //history.push('/login');
                     //alert('고객사 등록이 정상적으로 처리되었습니다');
                     alert(order);
-                    dispatch(alertActions.success('Registration successful'));
+                    dispatch(alertActions.success('Update successful'));
                     //window.location.replace("/");
                 },
                 error => {
@@ -99,22 +105,33 @@ function update(order) {
                 }
             );
     };
-
-    function request(order) { return { type: orderConstants.REGISTER_REQUEST, order } }
-    function success(order) { return { type: orderConstants.REGISTER_SUCCESS, order } }
-    function failure(error) { return { type: orderConstants.REGISTER_FAILURE, error } }
 }
 
 
-function _delete(orderid) {
-    return dispatch => {
-        dispatch(request(orderid));
+const _delete = (order_number) => {
+    const request = (order_number) => { return { type: orderConstants.REGISTER_REQUEST, order_number } }
+    const success = (order) => { return { type: orderConstants.REGISTER_SUCCESS, order } }
+    const failure = (error) => { return { type: orderConstants.REGISTER_FAILURE, error } }
+    const refresh = (orders) => { return { type: orderConstants.GETALL_SUCCESS, orders } }
 
-        orderService.deleteOrder(orderid)
+    return dispatch => {
+        dispatch(request(order_number));
+
+        orderService.delete(order_number)
             .then(
                 order => { 
                     dispatch(success());
                     dispatch(alertActions.success(order));
+
+                    orderService.getAll().then(
+                        orders => {
+                            dispatch(refresh(orders));
+                        },
+                        error => {
+                            alert(error);
+                            dispatch(failure(error.toString()));
+                        } 
+                    );
                 },
                 error => {
                     dispatch(failure(error.toString()));
@@ -122,9 +139,13 @@ function _delete(orderid) {
                 }
             );
     };
-
-    function request(orderid) { return { type: orderConstants.REGISTER_REQUEST, orderid } }
-    function success(order) { return { type: orderConstants.REGISTER_SUCCESS, order } }
-    function failure(error) { return { type: orderConstants.REGISTER_FAILURE, error } }
 }
 
+
+export const orderActions = {
+    register,
+    getAll,
+    getById,
+    update,
+    delete: _delete
+};

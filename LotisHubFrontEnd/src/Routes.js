@@ -19,6 +19,7 @@ import {
   NotFound as NotFoundView,
   ClientList as ClientListView,
   Products as ProductsView,
+  Orders as OrdersView,
 } from './views';
 
 const Routes = () => {
@@ -100,6 +101,12 @@ const Routes = () => {
         exact
         layout={MainLayout}
         path="/clientlist"
+      />
+      <RouteWithLayout
+        component={OrdersView}
+        exact
+        layout={MainLayout}
+        path="/orders"
       />
       <RouteWithLayout
         component={NotFoundView}

@@ -14,6 +14,8 @@ import LockOpenIcon from '@material-ui/icons/LockOpen';
 import BusinessIcon from '@material-ui/icons/Business';
 import ShopTwoIcon from '@material-ui/icons/ShopTwo';
 import ListIcon from '@material-ui/icons/List';
+import TocIcon from '@material-ui/icons/Toc';
+import BorderColorIcon from '@material-ui/icons/BorderColor';
 import { Profile, SidebarNav, UpgradePlan } from './components';
 
 const useStyles = makeStyles(theme => ({
@@ -68,7 +70,7 @@ const Sidebar = props => {
         {
           title : '상품등록',
           href: '/products',
-          icon: <ShopTwoIcon />,
+          icon: <BorderColorIcon />,
           isChild: true,
           children : []
         }
@@ -90,7 +92,29 @@ const Sidebar = props => {
         {
           title : '거래처등록',
           href: '/products',
-          icon: <ShopTwoIcon />,
+          icon: <BorderColorIcon />,
+          isChild: true,
+          children : []
+        }
+      ]
+    },
+    {
+      title: '주문',
+      href: '',
+      icon: <TocIcon />,
+      isChild: false,
+      children : [
+        {
+          title : '주문조회',
+          href: '/orders',
+          icon: <ListIcon />,
+          isChild: true,
+          children : []
+        },
+        {
+          title : '주문등록',
+          href: '/products',
+          icon: <BorderColorIcon />,
           isChild: true,
           children : []
         }
