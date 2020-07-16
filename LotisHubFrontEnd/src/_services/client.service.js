@@ -1,9 +1,4 @@
-import config from 'config';
-import axios from 'axios'
-
-const apiServer = axios.create({
-    baseURL: config.apiUrl
-})
+import apiServer from './api.endpoint'
 
 const getAll = async () => {
     return await apiServer.get("/clients")

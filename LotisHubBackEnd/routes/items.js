@@ -9,56 +9,40 @@ const router = express.Router();
 //router.use('/auth', auth);
 //router.use('/', authMiddleware);
 
-// function validateItem(item) {
-//     const schema = {
-//       client_code: Joi.string().min(2).max(50).required(),
-//       client_name: Joi.string().min(2).max(50).required(),
-//       office_address: Joi.string().min(5).max(255).required(),
-//       office_zipcode: Joi.string().min(2).max(50).required(),
-//       onwer_name: Joi.string().min(2).max(50).required(),
-//       representative_name: Joi.string().min(2).max(50).required(),
-//       office_phonenumber: Joi.number().integer().min(10).max(11).required(),
-//       base_unit_cost: Joi.number().integer().min(2).max(50).required(),
-//       packing_unit_cost: Joi.number().integer().min(2).max(50).required(),
-//       return_shipping_cost: Joi.number().integer().min(2).max(50).required(),
-//       cj_contract_unit_cost: Joi.number().integer().min(2).max(50).required(),
-//       on_delivery_cost: Joi.number().integer().min(2).max(50).required(),
-//       picking: Joi.number().integer().min(2).max(4).required(),
-//       hanjin_boxtype: Joi.number().integer().min(2).max(50).required(),
-//       cj_boxtype: Joi.number().integer().min(2).max(50).required(),
-//       input_cost: Joi.number().integer().min(2).max(50).required(),
-//       output_cost: Joi.number().integer().min(2).max(50).required(),
-//       airfare: Joi.number().integer().min(2).max(50).required(),
-//       courier_contract_code: Joi.string().min(2).max(50).required(),
-//       superviser_code: Joi.number().integer().min(2).max(50).required(),
-//       tax_invoice_date: Joi.date().format('YYYY-MM-DD').required(),
-//       service_start_date: Joi.date().format('YYYY-MM-DD').required(),
-//       service_end_date: Joi.date().format('YYYY-MM-DD').required(),
-//       description: Joi.string().min(2).max(50).required()
+function validateItem(item) {
+    const schema = {
+      item_code: Joi.string().min(1).max(50).required(),
+      // client_name: Joi.string().min(2).max(50).required(),
+      // office_address: Joi.string().min(5).max(255).required(),
+      // office_zipcode: Joi.string().min(2).max(50).required(),
+      // onwer_name: Joi.string().min(2).max(50).required(),
+      // representative_name: Joi.string().min(2).max(50).required(),
+      // office_phonenumber: Joi.number().integer().min(10).max(11).required(),
+      // base_unit_cost: Joi.number().integer().min(2).max(50).required(),
+      // packing_unit_cost: Joi.number().integer().min(2).max(50).required(),
+      // return_shipping_cost: Joi.number().integer().min(2).max(50).required(),
+      // cj_contract_unit_cost: Joi.number().integer().min(2).max(50).required(),
+      // on_delivery_cost: Joi.number().integer().min(2).max(50).required(),
+      // picking: Joi.number().integer().min(2).max(4).required(),
+      // hanjin_boxtype: Joi.number().integer().min(2).max(50).required(),
+      // cj_boxtype: Joi.number().integer().min(2).max(50).required(),
+      // input_cost: Joi.number().integer().min(2).max(50).required(),
+      // output_cost: Joi.number().integer().min(2).max(50).required(),
+      // airfare: Joi.number().integer().min(2).max(50).required(),
+      // courier_contract_code: Joi.string().min(2).max(50).required(),
+      // superviser_code: Joi.number().integer().min(2).max(50).required(),
+      // tax_invoice_date: Joi.date().format('YYYY-MM-DD').required(),
+      // service_start_date: Joi.date().format('YYYY-MM-DD').required(),
+      // service_end_date: Joi.date().format('YYYY-MM-DD').required(),
+      // description: Joi.string().min(2).max(50).required()
 
-//     };
-//     return Joi.validate(item, schema);
-// }
+    };
+    return Joi.validate(item, schema);
+}
 
 
 // Items Selection
 router.get('/', async function (req, res) {
-    // try {
-    //   await validateClient(req.body);
-    // }
-    // catch (err) {
-    //   console.log(req.body)
-    //   return res.status(400).send(JSON.stringify( {message:err.details[0].message} ) );
-    //   //return res.status(400).send(err.details[0].message);
-    // } 
-    // 토큰 확인
-    // if(!req.decoded.admin) {
-    //     return res.status(403).json({
-    //         message: 'you are not an admin'
-    //     })
-    // }
-
-  
     //등록된 물품 조회
     const itemFound = await db.items.findAll()
         .then( result => {
@@ -72,53 +56,53 @@ router.get('/', async function (req, res) {
         })
 });
 
-
-
 // Items Registration
-router.post('/register', async function (req, res) {
-    // 토큰확인
-    // if(!req.decoded.admin) {
-    //     return res.status(403).json({
-    //         message: 'you are not an admin'
-    //     })
-    // }
-
-    // 넘어온 데이터 검증
-    try {
-      await validateClient(req.body);
-    }
-    catch (err) {
-      console.log(req.body)
-      return res.status(400).send(JSON.stringify( {message:err.details[0].message} ) );
-      //return res.status(400).send(err.details[0].message);
-    } 
+router.post('/', async function (req, res) {
   
+  try {
+    // 넘어온 데이터 검증
+    validateItem(req.body);
+
     //등록된 물품 확인
     const itemFound = await db.items.findOne({
       where: {
-        item_id: req.body.item_id
+        item_name: req.body.item_name
       }
     });
     if (itemFound){
         return res.status(400).send(JSON.stringify({message: '이미 등록된 아이템 입니다!!'}));
         //return res.status(400).send('이미 등록된 사용자 입니다!!');
     }
-  
+    const reqItemInfo = req.body;
     // Create new item
-    var item = await db.items.build({
-      item_id: "",
-      item_code: "",
-      item_name: "",
-      item_model: "",
-      manufacturer_id: "",
-      unit_price: "",
-      shipping_unit_price: "",
-      items_stock: ""
+    const newItem = {
+      item_code: reqItemInfo.item_code,
+      item_name: reqItemInfo.item_name,
+      item_model: reqItemInfo.item_model,
+      manufacturer_id: 123456,
+      unit_price: reqItemInfo.unit_price,
+      shipping_unit_price: reqItemInfo.shipping_unit_price,
+      items_stock: reqItemInfo.items_stock
+    };
+
+    db.sequelize.transaction( t => {
+      return db.items.create(newItem, {transaction: t})
+      .then((r) => {
+        console.log(r)
+        return res.status(200).json(r);
+      }).catch((error) => {
+          console.log(error);
+          t.rollback();
+          return res.status(400).send(JSON.stringify( {message: error} ) );
+        });
     });
 
-    item = await item.save();
-
-
+  }
+  catch (err) {
+    console.log(req.body)
+    return res.status(400).send(JSON.stringify( {message:err.details[0].message} ) );
+    //return res.status(400).send(err.details[0].message);
+  } 
 
 });
 

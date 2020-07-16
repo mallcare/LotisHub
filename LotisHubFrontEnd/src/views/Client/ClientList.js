@@ -94,22 +94,6 @@ const ClientList = props => {
     }, 100)
   });
 
-  const UpdateClient = (newClient, oldClient) => new Promise((resolve, reject) => {
-    setTimeout(() => {
-        if( window.confirm("고객사 정보를 수정 하시겠습니까? " + newClient.name) ){
-            console.log(newClient);
-            //deleteHandler( event, rowData );
-        }
-        //userActions.
-    //   const dataUpdate = [...data];
-    //   const index = oldData.tableData.id;
-    //   dataUpdate[index] = newData;
-    //   setData([...dataUpdate]);
-
-      resolve();
-    }, 100)
-  })
-
   const UnregistClient = client => new Promise((resolve, reject) => {
     setTimeout(() => {
 

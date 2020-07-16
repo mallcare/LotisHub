@@ -58,93 +58,45 @@ const useStyles = makeStyles(theme => ({
   
 
 const ProductsList = props => {
-    const classes = useStyles();
+  const classes = useStyles();
+  const products = useSelector(state => state.products.products);
+  const dispatch = useDispatch();
 
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-    const products = useSelector(state => state.products);
+  const [columns, setColumns] = useState([
+    { field: 'item_id', title: '번호', width: 100 },
+    { field: 'item_code', title: '물품코드', initialEditValue: 'initial edit value', width: 100 },
+    { field: 'item_name', title: '물품이름', width: 100 },
+    { field: 'item_model', title: '물품모델명', width: 100 },
+    { field: 'unit_price', title: '물품단가', width: 100 },
+    { field: 'shipping_unit_price', title: '물품배송단가', width: 100 },
+    { field: 'items_stock', title: '물품재고수량', width: 100 },
+  ]);
 
-    const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(productActions.getAll());
+    
+  }, []);
 
-    const [data, setProductsData] = useState([]);
-       
-    const [isError, setIsError] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-
-    const [columns, setColumns] = useState([
-      { field: 'item_id', title: '번호', width: 100 },
-      { field: 'item_code', title: '물품코드', initialEditValue: 'initial edit value', width: 100 },
-      { field: 'item_name', title: '물품이름', width: 100 },
-      { field: 'model_name', title: '물품모델명', width: 100 },
-      { field: 'unit_price', title: '물품단가', width: 100 },
-      { field: 'shipping_unit_price', title: '물품배송단가', width: 100 },
-      { field: 'items_stock', title: '물품재고수량', width: 100 },
-    ]);
-
- 
-    useEffect(() => {
-      dispatch(productActions.getAll());
-
-      setProductsData(products.products);
+  const RegistProduct = newProduct => new Promise((resolve, reject) => {
+    setTimeout(() => {
       
-    }, []);
+      dispatch(productActions.register(newProduct));
+      
+      resolve();
+    }, 100)
+  });
 
+  const UnregistProduct = product => new Promise((resolve, reject) => {
+    setTimeout(() => {
 
-    const localization = [
-        {
-            pagination: {
-                labelDisplayedRows: '{from}-{to} of {count}'
-            },
-            toolbar: {
-                nRowsSelected: '{0} row(s) selected'
-            },
-            header: {
-                actions: '편집'
-            },
-            body: {
-                emptyDataSourceMessage: 'No records to display',
-                filterRow: {
-                    filterTooltip: 'Filter'
-            }
-         }
-        }
-    ];
+      dispatch(productActions.delete(product.item_id));
 
-
-
-    function AddRow(data, oldData, newData) {
-        console.log("add");
-        //setDialogOpen(false);
-        // 수정 Api 호출 후 결과에 따라 
-        //const {data, oldData, newData } = props;
-
-        // dispatch(userActions.resetPassword( formState.values.email ));
-        
-        //setData([...dataUpdate]);
-    };
-
-    function UpdateRow(data, oldData, newData) {
-        console.log("Update");
-        //setDialogOpen(false);
-        // 수정 Api 호출 후 결과에 따라 
-        // dispatch(userActions.resetPassword( formState.values.email ));
-        
-        //setData([...dataUpdate]);
-    };
-
-    function DeleteRow(){
-        
-        // axios.delete(`http://localhost:3000/api/v1/product?id=${props}`)
-        //     .then(
-        //         res => {
-        //              console.log('Deleted Successfully.');
-        //          },
-        //         error => {
-        //         }    
-    //       //dispatch(userActions.DeleteProduct( id, token ));
-    //    // setDialogOpen(false);
-
-            // );
-    }
+      resolve()
+    }, 100)
+  })
 
   return (
     <div style={{ maxWidth: "100%" }} className={classes.root}>
@@ -152,45 +104,10 @@ const ProductsList = props => {
       title="물품 조회"
       icons={tableIcons}
       columns={columns}
-      data={data}
+      data={products}
       editable={{
-        onRowAdd: newData =>
-          new Promise((resolve, reject) => {
-            setTimeout(() => {
-              //userActions.
-              
-              //setData([...data, newData]);
-              
-              resolve();
-            }, 1000)
-          }),
-        onRowUpdate: (newData, oldData) =>
-          new Promise((resolve, reject) => {
-            setTimeout(() => {
-                if( window.confirm("물품 정보를 수정 하시겠습니까? " + newData.name) ){
-                    console.log(newData);
-                    //deleteHandler( event, rowData );
-                }
-                //userActions.
-            //   const dataUpdate = [...data];
-            //   const index = oldData.tableData.id;
-            //   dataUpdate[index] = newData;
-            //   setData([...dataUpdate]);
-
-              resolve();
-            }, 1000)
-          }),
-        onRowDelete: oldData =>
-          new Promise((resolve, reject) => {
-            setTimeout(() => {
-              const dataDelete = [...data];
-              const index = oldData.tableData.id;
-              dataDelete.splice(index, 1);
-              //setData([...dataDelete]);
-              
-              resolve()
-            }, 1000)
-          }),
+        onRowAdd: RegistProduct,
+        onRowDelete: UnregistProduct,
       }}
       options={{
         actionsColumnIndex: -1,

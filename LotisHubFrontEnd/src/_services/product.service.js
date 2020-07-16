@@ -1,13 +1,6 @@
 import config from 'config';
 import { authHeader } from '../_helpers';
-
-export const productService = {
-    register,
-    getAll,
-    getById,
-    update,
-    delete: _delete
-};
+import apiServer from './api.endpoint'
 
 function getAll() {
     const requestOptions = {
@@ -26,14 +19,10 @@ function getById(id) {
     return fetch(`${config.apiUrl}/items${id}`, requestOptions).then(handleResponse);
 }
 
-function register(product) {
-    const requestOptions = {
-        method: 'POST',
-        headers: authHeader(),
-        body: JSON.stringify(product)
-    };
-
-    return fetch(`${config.apiUrl}/items/register`, requestOptions).then(handleResponse);
+const register = async (payload) => {
+    return await apiServer.post("/items", payload)
+                .then(response => response.data)
+                .catch((error) => { throw error})
 }
 
 function update(product) {
@@ -72,3 +61,11 @@ function handleResponse(response) {
         return data;
     });
 }
+
+export const productService = {
+    register,
+    getAll,
+    getById,
+    update,
+    delete: _delete
+};
