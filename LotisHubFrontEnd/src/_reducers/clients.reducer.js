@@ -14,6 +14,14 @@ export function clients(state = {}, action) {
       return { 
         error: action.error
       };
+    case clientConstants.UPDATE_SUCCESS:
+      return {
+        ...state,
+        clients: state.clients.map(client =>
+          client.client_id === action.client.client_id
+          ? action.client : client
+        )
+      };
     case clientConstants.DELETE_REQUEST:
       // add 'deleting:true' property to client being deleted
       return {

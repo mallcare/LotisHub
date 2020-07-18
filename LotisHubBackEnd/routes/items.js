@@ -40,6 +40,16 @@ function validateItem(item) {
     return Joi.validate(item, schema);
 }
 
+router.get('/:id', async (req, res) => {
+  const itemFound = await db.items.findByPk(req.params.id)
+      .then( result => {
+          res.json(result);
+      })
+      .catch( err => {
+          res.json(err);
+          console.log(err);
+      })
+});
 
 // Items Selection
 router.get('/', async function (req, res) {
@@ -105,6 +115,50 @@ router.post('/', async function (req, res) {
   } 
 
 });
+
+router.put('/:itemId', async (req, res) => {
+  const reqBody = req.body;
+  delete reqBody["item_id"]
+  const { itemId } = req.params
+    //등록된 고객사 확인
+  const itemFound = await db.items.findOne({
+    where: {
+      item_id: itemId
+    }
+  });
+  if (itemFound){
+      //TODO: 모든 필드를 수정해야 할 필요가 있습니까??
+    db.items.update(reqBody, { 
+      where : { item_id: itemId }
+    })
+    .then(() => { 
+      return db.items.findByPk(itemId) 
+    })
+    .then((item) => { 
+      res.status(200).json(item) 
+    })
+    .catch( err => {
+        res.json(err);
+        console.log(err);
+    })
+  } else {
+    return res.status(400).json({message: '없는 품목 입니다!!'});
+  }
+
+});
+
+router.delete('/:item_id', async (req, res) => {
+  const { item_id } = req.params
+  db.items.destroy({where: {item_id: item_id}})
+  .then(result => {
+      return res.status(200).json(result);
+  })
+  .catch(err => {
+      console.error(err);
+      return res.status(500).json(err);
+  });
+});
+
 
 
 module.exports = router;

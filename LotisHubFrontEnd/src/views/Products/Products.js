@@ -16,7 +16,6 @@ import ChevronRight from '@material-ui/icons/ChevronRight';
 import Clear from '@material-ui/icons/Clear';
 import DeleteOutline from '@material-ui/icons/DeleteOutline';
 import Edit from '@material-ui/icons/Edit';
-import Delete from '@material-ui/icons/Delete';
 import FilterList from '@material-ui/icons/FilterList';
 import FirstPage from '@material-ui/icons/FirstPage';
 import LastPage from '@material-ui/icons/LastPage';
@@ -24,6 +23,8 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
+
+import UpdateProductDialog from './updateDialog';
 
 const tableIcons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -55,8 +56,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-  
-
 const ProductsList = props => {
   const classes = useStyles();
   const products = useSelector(state => state.products.products);
@@ -65,8 +64,10 @@ const ProductsList = props => {
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const [productInfo, setProductInfo] = useState({})
+  const [editorOpen, setEditorOpen] = useState(false)
+
   const [columns, setColumns] = useState([
-    { field: 'item_id', title: '번호', width: 100 },
     { field: 'item_code', title: '물품코드', initialEditValue: 'initial edit value', width: 100 },
     { field: 'item_name', title: '물품이름', width: 100 },
     { field: 'item_model', title: '물품모델명', width: 100 },
@@ -79,6 +80,17 @@ const ProductsList = props => {
     dispatch(productActions.getAll());
     
   }, []);
+
+  const actions = [
+    {
+      icon: Edit,
+      tooltip: '물품 정보 수정',
+      onClick: (event, rowData) => {
+        setEditorOpen(true)
+        setProductInfo(rowData)
+      }
+    },
+  ];
 
   const RegistProduct = newProduct => new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -98,6 +110,10 @@ const ProductsList = props => {
     }, 100)
   })
 
+  const CloseEditor = () => {
+    setEditorOpen(false)
+  }
+
   return (
     <div style={{ maxWidth: "100%" }} className={classes.root}>
     <MaterialTable
@@ -109,52 +125,47 @@ const ProductsList = props => {
         onRowAdd: RegistProduct,
         onRowDelete: UnregistProduct,
       }}
+      actions={actions}
       options={{
         actionsColumnIndex: -1,
         exportButton: true
       }}
       localization={{
         pagination: {
-            labelDisplayedRows: '{from}-{to} of {count}'
+          labelDisplayedRows: '{from}-{to} of {count}'
         },
         toolbar: {
-            addRemoveColumns: '추가',
-            nRowsSelected: '{0} row(s) selected',
-            exportTitle: 'Export',
-            exportAriaLabel: 'Export',
-            exportName: '엑셀 출력',
-            searchTooltip: '검색',
-            searchPlaceholder: '검색'
+          addRemoveColumns: '추가',
+          nRowsSelected: '{0} row(s) selected',
+          exportTitle: 'Export',
+          exportAriaLabel: 'Export',
+          exportName: '엑셀 출력',
+          searchTooltip: '검색',
+          searchPlaceholder: '검색'
         },
         header: {
-            actions: '편집'
+          actions: '편집'
         },
         body: {
-            emptyDataSourceMessage: 'No records to display',
-            filterRow: {
-                filterTooltip: 'Filter'
+          emptyDataSourceMessage: 'No records to display',
+          filterRow: {
+              filterTooltip: 'Filter'
 
-            },
-        editRow: {
-            deleteText: '물품 정보를 삭제하시겠습니까?',
-            cancelTooltip: '취소',
-            saveTooltip: '저장',
-            editTooltip: '수정'
-            },
-        addTooltip: "물품 정보 등록",
-        deleteTooltip: "삭제",
-        editTooltip: "수정"
-     }
-
-    }}
-
+          },
+          editRow: {
+              deleteText: '물품 정보를 삭제하시겠습니까?',
+              cancelTooltip: '취소',
+              saveTooltip: '저장',
+              editTooltip: '수정'
+              },
+          addTooltip: "물품 정보 등록",
+          deleteTooltip: "삭제",
+          editTooltip: "수정"
+        }
+      }}
     />
-
-    </div>
-  );
-
-
-
+      <UpdateProductDialog open={editorOpen} product={productInfo} close={CloseEditor} />
+    </div>);
 };
 
 ProductsList.propTypes = {

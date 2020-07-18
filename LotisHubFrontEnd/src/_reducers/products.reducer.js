@@ -14,6 +14,13 @@ export function products(state = {}, action) {
       return { 
         error: action.error
       };
+    case productConstants.UPDATE_SUCCESS:
+      return {
+        products: state.products.map(product =>
+          product.item_id === action.product.item_id
+          ? action.product : product
+        )
+      };
     case productConstants.DELETE_REQUEST:
       // add 'deleting:true' property to product being deleted
       return {

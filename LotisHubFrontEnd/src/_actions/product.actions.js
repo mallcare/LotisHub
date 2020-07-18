@@ -2,16 +2,13 @@ import { productConstants } from '../_constants';
 import { productService } from '../_services';
 import { alertActions } from '.';
 
-export const productActions = {
-    register,
-    getAll,
-    getById,
-    update,
-    delete: _delete
-};
-
 /************************************Product API********************************************/
-function register(product) {
+const register = (product) => {
+    const request = (product) => { return { type: productConstants.REGISTER_REQUEST, product } }
+    const success = (product) => { return { type: productConstants.REGISTER_SUCCESS, product } }
+    const failure = (error) => { return { type: productConstants.REGISTER_FAILURE, error } }
+    const refresh = (products) => { return { type: productConstants.GETALL_SUCCESS, products } }
+
     return dispatch => {
         dispatch(request(product));
 
@@ -19,11 +16,19 @@ function register(product) {
             .then(
                 product => { 
                     dispatch(success(product));
-                    //history.push('/login');
-                    //alert('고객사 등록이 정상적으로 처리되었습니다');
-                    alert(product);
+
+                    alert("물품 등록이 정상적으로 되었습니다.");
                     dispatch(alertActions.success('Registration successful'));
-                    //window.location.replace("/");
+                    productService.getAll().then(
+                        products => {
+                            dispatch(refresh(products));
+                        },
+                        error => {
+                            alert(error);
+                            dispatch(failure(error.toString()));
+                            //window.location.replace("/sign-in");
+                        } 
+                    );
                 },
                 error => {
                     alert(error.toString());
@@ -32,14 +37,15 @@ function register(product) {
                 }
             );
     };
-
-    function request(product) { return { type: productConstants.REGISTER_REQUEST, product } }
-    function success(product) { return { type: productConstants.REGISTER_SUCCESS, product } }
-    function failure(error) { return { type: productConstants.REGISTER_FAILURE, error } }
 }
 
 
-function getAll() {
+const getAll = () => {
+    
+    const request = () => { return { type: productConstants.GETALL_REQUEST } }
+    const success = (products) => { return { type: productConstants.GETALL_SUCCESS, products } }
+    const failure = (error) => { return { type: productConstants.GETALL_FAILURE, error } }
+
     return dispatch => {
         dispatch(request());
 
@@ -55,40 +61,40 @@ function getAll() {
                 } 
             );
     };
-
-    function request() { return { type: productConstants.GETALL_REQUEST } }
-    function success(products) { return { type: productConstants.GETALL_SUCCESS, products } }
-    function failure(error) { return { type: productConstants.GETALL_FAILURE, error } }
 }
 
 
-function getById(id) {
+const getById = (id) => {
+    
+    const request = () => { return { type: productConstants.GETALL_REQUEST } }
+    const success = (product) => { return { type: productConstants.GETALL_SUCCESS, product } }
+    const failure = (error) => { return { type: productConstants.GETALL_FAILURE, error } }
+
     return dispatch => {
         dispatch(request(id));
 
-        productService.getProductbyId(id)
+        productService.getById(id)
             .then(
                 product => dispatch(success(product)),
                 error => dispatch(failure(error.toString()))
             );
     };
-
-    function request() { return { type: productConstants.GETALL_REQUEST } }
-    function success(product) { return { type: productConstants.GETALL_SUCCESS, product } }
-    function failure(error) { return { type: productConstants.GETALL_FAILURE, error } }
 }
 
-function update(product) {
+const update = (product) => {
+    const request = (product) => { return { type: productConstants.REGISTER_REQUEST, product } }
+    const success = (product) => { return { type: productConstants.UPDATE_SUCCESS, product } }
+    const failure = (error) => { return { type: productConstants.REGISTER_FAILURE, error } }
+
     return dispatch => {
         dispatch(request(product));
 
-        productService.register(product)
+        productService.update(product.item_id, product)
             .then(
                 product => { 
                     dispatch(success(product));
                     //history.push('/login');
                     //alert('고객사 등록이 정상적으로 처리되었습니다');
-                    alert(product);
                     dispatch(alertActions.success('Registration successful'));
                     //window.location.replace("/");
                 },
@@ -99,22 +105,32 @@ function update(product) {
                 }
             );
     };
-
-    function request(product) { return { type: productConstants.REGISTER_REQUEST, product } }
-    function success(product) { return { type: productConstants.REGISTER_SUCCESS, product } }
-    function failure(error) { return { type: productConstants.REGISTER_FAILURE, error } }
 }
 
-
-function _delete(productid) {
+const _delete = (productid) => {
+    const request = (productid) => { return { type: productConstants.REGISTER_REQUEST, productid } }
+    const success = (product) => { return { type: productConstants.REGISTER_SUCCESS, product } }
+    const failure = (error) => { return { type: productConstants.REGISTER_FAILURE, error } }
+    const refresh = (products) => { return { type: productConstants.GETALL_SUCCESS, products } }
+    
     return dispatch => {
         dispatch(request(productid));
 
-        productService.deleteProduct(productid)
+        productService.delete(productid)
             .then(
                 product => { 
                     dispatch(success());
                     dispatch(alertActions.success(product));
+                    productService.getAll().then(
+                        products => {
+                            dispatch(refresh(products));
+                        },
+                        error => {
+                            alert(error);
+                            dispatch(failure(error.toString()));
+                            //window.location.replace("/sign-in");
+                        } 
+                    );
                 },
                 error => {
                     dispatch(failure(error.toString()));
@@ -122,9 +138,12 @@ function _delete(productid) {
                 }
             );
     };
-
-    function request(productid) { return { type: productConstants.REGISTER_REQUEST, productid } }
-    function success(product) { return { type: productConstants.REGISTER_SUCCESS, product } }
-    function failure(error) { return { type: productConstants.REGISTER_FAILURE, error } }
 }
 
+export const productActions = {
+    register,
+    getAll,
+    getById,
+    update,
+    delete: _delete
+};

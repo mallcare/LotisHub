@@ -4,6 +4,7 @@ const db = require("../models/index");
 const Joi = require("joi");
 const authMiddleware = require('../middlewares/auth');
 const auth = require('../auth/auth.controller');
+const { update } = require('lodash');
 
 const router = express.Router();
 
@@ -45,7 +46,7 @@ function validateClient(client) {
 // Client Selection
 router.get('/:id', async (req, res) => {
   //등록된 사용자 조회
-  const clientFound = await db.clients.findOne(req.params.id)
+  const clientFound = await db.clients.findByPk(req.params.id)
       .then( result => {
           res.json(result);
       })
@@ -124,18 +125,35 @@ router.post('/', async (req, res) => {
 });
 
 
-router.put('/:id', async (req, res) => {
+router.put('/:clientId', async (req, res) => {
+
+  const reqBody = req.body;
+  delete reqBody["client_id"]
+  const { clientId } = req.params
     //등록된 고객사 확인
-    // const clientFound = await db.clients.findOne({
-    //   where: {
-    //     client_id: req.body.client_id
-    //   }
-    // });
-    // if (clientFound){
-    //     return res.status(400).send(JSON.stringify({message: '이미 등록된 사용자 입니다!!'}));
-    //     //return res.status(400).send('이미 등록된 사용자 입니다!!');
-    // }
-  
+  const clientFound = await db.clients.findOne({
+    where: {
+      client_id: clientId
+    }
+  });
+  if (clientFound){
+      //TODO: 모든 필드를 수정해야 할 필요가 있습니까??
+    db.clients.update(reqBody, { 
+      where : { client_id: clientId }
+    })
+    .then(() => { 
+      return db.clients.findByPk(clientId) 
+    })
+    .then((client) => { 
+      res.status(200).json(client) 
+    })
+    .catch( err => {
+        res.json(err);
+        console.log(err);
+    })
+  } else {
+    return res.status(400).json({message: '없는 사용자 입니다!!'});
+  }
 });
 
 

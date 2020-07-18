@@ -72,7 +72,7 @@ const getById = (id) => {
 
     return dispatch => {
         dispatch(request(id));
-        clientService.getClientbyId(id)
+        clientService.getById(id)
             .then(
                 client => dispatch(success(client)),
                 error => dispatch(failure(error.toString()))
@@ -83,20 +83,20 @@ const getById = (id) => {
 
 const update = (client) => {
     const request = (client) => { return { type: clientConstants.REGISTER_REQUEST, client } }
-    const success = (client) => { return { type: clientConstants.REGISTER_SUCCESS, client } }
+    const success = (client) => { return { type: clientConstants.UPDATE_SUCCESS, client } }
     const failure = (error) => { return { type: clientConstants.REGISTER_FAILURE, error } }
 
     return dispatch => {
         dispatch(request(client));
-        clientService.register(client)
+        clientService.update(client.client_id, client)
             .then(
                 client => { 
                     dispatch(success(client));
                     //history.push('/login');
-                    //alert('고객사 등록이 정상적으로 처리되었습니다');
-                    alert(client);
+                    //alert('고객사 등록이 정상적으로 처리되었습니다')
                     dispatch(alertActions.success('Registration successful'));
                     //window.location.replace("/");
+
                 },
                 error => {
                     alert(error.toString());
