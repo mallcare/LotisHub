@@ -23,7 +23,7 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUp from '@material-ui/icons/KeyboardArrowUp';
 import { Button } from '@material-ui/core';
-
+import AddMatchingLayout from './AddMatchingLayout'
 
 const tableIcons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -78,6 +78,7 @@ const ExcelMatchingPage = props => {
         { excel_column: "화물규격", courier_column: "화물규격"},
     ]);
     const [isLoading, setIsLoading] = useState(false);
+    const [openAddDialog, setOpenAddDialog] = useState(false);
 
     const [columns, setColumns] = useState([
         { 
@@ -188,7 +189,7 @@ const ExcelMatchingPage = props => {
             icon: Backup,
             tooltip: '매칭 저장하기',
             isFreeAction: true,
-            onClick: (event) => alert("You want to add a new row")
+            onClick: (event) => setOpenAddDialog(true)
         },
         {
             icon: Search,
@@ -246,6 +247,10 @@ const ExcelMatchingPage = props => {
         }, 100);
     })
 
+    const CloseAddDialog = () => {
+        setOpenAddDialog(false);
+    }
+
     return (
     <div style={{ maxWidth: "100%" }} className={classes.root}>
         <MaterialTable
@@ -288,7 +293,7 @@ const ExcelMatchingPage = props => {
                 }
             }}
         />
-
+        <AddMatchingLayout open={openAddDialog} close={CloseAddDialog} />
     </div>
     );
 
