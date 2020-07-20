@@ -13,3 +13,4 @@ export { default as UserList } from './UserList';
 export { default as ClientList } from './Client';
 export { default as Products } from './Products';
 export { default as Orders } from './Orders';
+export { default as ExcelMatchingPage } from './ExcelMatching';

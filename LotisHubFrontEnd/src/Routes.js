@@ -20,6 +20,7 @@ import {
   ClientList as ClientListView,
   Products as ProductsView,
   Orders as OrdersView,
+  ExcelMatchingPage as ExcelMatchingView,
 } from './views';
 
 const Routes = () => {
@@ -47,6 +48,12 @@ const Routes = () => {
         exact
         layout={MainLayout}
         path="/products"
+      />
+      <RouteWithLayout
+        component={ExcelMatchingView}
+        exact
+        layout={MainLayout}
+        path="/excel-matching"
       />
       <RouteWithLayout
         component={TypographyView}

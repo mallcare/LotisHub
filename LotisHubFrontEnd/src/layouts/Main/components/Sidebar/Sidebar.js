@@ -90,8 +90,8 @@ const Sidebar = props => {
           children : []
         },
         {
-          title : '거래처등록',
-          href: '/products',
+          title : ' 택배사 레이아웃 매칭',
+          href: '/excel-matching',
           icon: <BorderColorIcon />,
           isChild: true,
           children : []
