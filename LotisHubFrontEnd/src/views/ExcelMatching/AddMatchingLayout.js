@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 import { 
     Button, TextField,
@@ -7,7 +6,6 @@ import {
 } from '@material-ui/core';
 
 import SaveIcon from '@material-ui/icons/Save';
-import { productActions } from '../../_actions';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -28,7 +26,6 @@ const useStyles = makeStyles(theme => ({
 
 const AddMatchingLayout = props => {
     const classes   = useStyles();
-    const dispatch  = useDispatch();
 
     const [layout, setLayout] =  useState({
         name: ""
@@ -39,7 +36,7 @@ const AddMatchingLayout = props => {
     }, [props.open]);
 
     const save = () => {
-    
+        props.save(layout);
         props.close();
     }
     

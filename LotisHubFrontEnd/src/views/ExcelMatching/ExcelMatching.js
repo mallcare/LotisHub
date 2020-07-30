@@ -1,7 +1,9 @@
 import React, { useEffect, useState, forwardRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 import MaterialTable from 'material-table'
+import { excelMatchingActions } from '../../_actions';
+import { excelMatchService } from '../../_services'
 
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
@@ -237,7 +239,7 @@ const ExcelMatchingPage = props => {
 
     const UpdateColumn = (newData, oldData) => new Promise((resolve, reject) => {
         setTimeout(() => {
-            const dataUpdate = [...matchingData];
+            // const dataUpdate = [...matchingData];
             // const index = oldData.tableData.id;
             // dataUpdate[index] = newData;
             
@@ -249,6 +251,31 @@ const ExcelMatchingPage = props => {
 
     const CloseAddDialog = () => {
         setOpenAddDialog(false);
+    }
+
+    const saveMatching = (layout) => {
+        excelMatchService.getByName(layout.name)
+        .then(
+            found => {
+                if(!found) {
+                    dispatch(excelMatchingActions.upsert({
+                        layout: layout,
+                        matchings: matchingData
+                    }));
+                } else {
+                    if(window.confirm("기존 이름이 있습니다.\n 덮어쓰기 하시겠습니까?")) {
+                        dispatch(excelMatchingActions.upsert({
+                            layout: layout,
+                            matchings: matchingData
+                        }));
+                    }
+                }
+            },
+            error => {
+                alert(error.toString());
+            }
+        )
+        
     }
 
     return (
@@ -293,7 +320,7 @@ const ExcelMatchingPage = props => {
                 }
             }}
         />
-        <AddMatchingLayout open={openAddDialog} close={CloseAddDialog} />
+        <AddMatchingLayout open={openAddDialog} save={saveMatching} close={CloseAddDialog} />
     </div>
     );
 

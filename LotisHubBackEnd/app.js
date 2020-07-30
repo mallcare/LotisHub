@@ -34,6 +34,8 @@ const loginRouter = require("./routes/login");
 const clientRouter = require("./routes/clients");
 const itemsRouter = require("./routes/items");
 const ordersRouter = require("./routes/orders");
+const excelMatchRouter = require("./routes/excel_matching");
+
 const db = require("./models/index");
 
 
@@ -44,6 +46,7 @@ app.use('/api/login', loginRouter);
 app.use('/api/clients', clientRouter);
 app.use('/api/items', itemsRouter);
 app.use('/api/orders', ordersRouter);
+app.use('/api/excel-match', excelMatchRouter);
 
 // //db.sequelize.sync();
 
